@@ -1,16 +1,19 @@
-inputs {}
+# Terragrunt configuration for the project
+inputs = {}
 
 locals {
-    tf_aws_backend_bucket = "tbd"
-    tf_aws_backend_table = "tbd"
-    tf_aws_backend_region = "eu-central-1"
-    project_vars = read_terragrunt_config(find_in_parent_folders("project.tfvars", "_.tfvars"), { locals = {
-        account_id      = "",
-        region          = "",
-    })
-    # Extract the variables we need for easy access
-    account_id = local.project_vars.locals.account_id
-    region     = local.project_vars.locals.region
+  tf_aws_backend_bucket = "tbd"
+  tf_aws_backend_table  = "tbd"
+  tf_aws_backend_region = "eu-central-1"
+  # Extract the variables we need for easy access
+  account_id = "123456789012" # Replace with actual account ID
+  region     = "eu-central-1" # Replace with actual region
+  tags = {
+    Environment = "production"
+    Project     = "eks-karpenter"
+    ManagedBy   = "terraform"
+  }
+
 }
 
 remote_state {
@@ -20,28 +23,23 @@ remote_state {
     if_exists = "overwrite_terragrunt"
   }
   config = {
-    bucket         = "${local.tf_aws_backend_bucket}"
-    key            = "${path_relative_to_include()}/terraform.tfstate"
-    region         = "${local.tf_aws_backend_region}"
-    encrypt        = true
-    dynamodb_table = "${local.tf_aws_backend_table}"
+    bucket       = "${local.tf_aws_backend_bucket}"
+    key          = "${path_relative_to_include()}/terraform.tfstate"
+    region       = "${local.tf_aws_backend_region}"
+    encrypt      = true
+    use_lockfile = true
   }
 }
 
 terraform_version_constraint  = ">= 1.13, < 2.0"
-terragrunt_version_constraint = ">= 0.93, <1.0"
-
-
-include {
-  path = find_in_parent_folders()
-}
+terragrunt_version_constraint = ">= 0.93, < 1.0"
 
 generate "providers" {
   path      = "providers.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 provider "aws" {
-  region = ${local.region}
+  region = "${local.region}"
 }
 EOF
 }
