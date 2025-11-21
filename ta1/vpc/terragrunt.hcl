@@ -1,6 +1,6 @@
 # This is a Terragrunt module for VPC infrastructure.
 terraform {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v6.5.1"
+  source = "github.com/terraform-aws-modules/terraform-aws-vpc?ref=v6.5.1"
 }
 
 include "root" {
@@ -21,32 +21,31 @@ inputs = {
   enable_dns_support   = true
 
   # Additional tags for all resources
-  tags = local.tags
-}
+  tags = include.root.local.tags
 
   # Tags specifically for the VPC
-  vpc_tags = {
+  vpc_tags = merge(include.root.local.tags, {
     Name                                    = "eks-vpc"
     "kubernetes.io/cluster/primary-cluster" = "shared"
-  }
+  })
 
   # Tags for private subnets - needed for EKS node auto-discovery
-  private_subnet_tags = {
+  private_subnet_tags = merge(include.root.local.tags, {
     "kubernetes.io/role/internal-elb"       = "1"
     "kubernetes.io/cluster/primary-cluster" = "shared"
-  }
+  })
 
   # Tags for public subnets - needed for EKS node auto-discovery
-  public_subnet_tags = {
+  public_subnet_tags = merge(include.root.local.tags, {
     "kubernetes.io/role/elb"                = "1"
     "kubernetes.io/cluster/primary-cluster" = "shared"
-  }
+  })
 
   # Tags for route tables to help with EKS load balancer discovery
-  public_route_table_tags = {
+  public_route_table_tags = merge(include.root.local.tags, {
     "kubernetes.io/role/elb" = "1"
-  }
-  private_route_table_tags = {
+  })
+  private_route_table_tags = merge(include.root.local.tags, {
     "kubernetes.io/role/internal-elb" = "1"
-  }
+  })
 }

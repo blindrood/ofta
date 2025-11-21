@@ -1,0 +1,50 @@
+# Terraform/ Terragrunt files
+.terraform/
+.terragrunt-cache/
+**/.terraform.lock.hcl
+**/*.tfstate
+**/*.tfstate.*
+
+# Terragrunt generated files
+**/backend.tf
+**/providers.tf
+**/versions.tf
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
+
+# Environment specific
+.terraformrc
+terraform.rc
+**/terraform.tfvars
+**/auto*.tfvars
+**/*.auto.tfvars
+
+# Secrets/credentials
+**/*.key
+**/*.pem
+**/credentials.json
+**/config.json
+
+# Output directories
+**/output/
+**/bin/
+**/dist/
+
+# Kubeconfig and kubectl
+**/.kube/
+**/kubeconfig
+**/.kubectl/
+
+# Temporary files
+**/tmp/
+**/temp/
+**/*.tmp
